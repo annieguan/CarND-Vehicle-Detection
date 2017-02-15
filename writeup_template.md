@@ -38,14 +38,14 @@ The code for this step is contained in "Section 1: HOG" of `Vehicle_Detection.py
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
 ![alt text][image1]
-![alt_text][image8]
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `YCrCb` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
 
 
 ![alt text][image2]
+![alt_text][image8]
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
@@ -65,26 +65,41 @@ spatial_feat = True # Spatial features on or off
 hist_feat = True # Histogram features on or off
 hog_feat = True # HOG features on or off
 
-Using these parameters, I was able to achieve 99.07% accuracy using SVM classifier.
+Using these parameters, I was able to achieve ~99% accuracy using SVM classifier.
 
+```59.52 Seconds to extract HOG features...
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 6108
+15.38 Seconds to train SVC...
+Test Accuracy of SVC =  0.9896
+My SVC predicts:  [ 1.  0.  1.  1.  1.  1.  0.  0.  1.  0.]
+For these 10 labels:  [ 1.  0.  1.  1.  1.  1.  0.  0.  1.  0.]
+0.00094 Seconds to predict 10 labels with SVC
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
+```
 
 After the selection of the feature parameters, the feature vector are generated and scaled, and used to train the SVM classifier. We have 8792 car images and 8968 non car images, each is 64x64. I then split the data into randomzied training and test sets of 80/20. 
 
+```
 rand_state = np.random.randint(0, 100)
-X_train, X_test, y_train, y_test = train_test_split(
-    scaled_X, y, test_size=0.2, random_state=rand_state)
-    
+X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.2, random_state=rand_state)
+```
+   
     
 ###Sliding Window Search
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+Since HOG is a computationally expensive operation, I have tried to optimize the sliding window operation.
+
+1) We run the classifier only on the lower half of the image where the road lies
+
+`y_start_stop = [int(image.shape[0]/2), image.shape[0]] `
 
 ![alt text][image3]
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
+
 
 Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
 
