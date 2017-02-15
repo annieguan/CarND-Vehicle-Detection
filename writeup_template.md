@@ -48,7 +48,8 @@ Here is an example using the `YCrCb` color space and HOG parameters of `orientat
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters and find out color space RGB has the least linear SVM accuracy
+I tried various combinations of parameters in colorspace, hog_chanel, spatial_size, etc and find out color space RGB has the least linear SVM accuracy.  I tried 'YCrcb' and 'HSV' colorspace and they have better SVM accuracy than RGB.
+Also, use all hog_channel significantly increase the predictiion accuracy.
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
