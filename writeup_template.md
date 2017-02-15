@@ -7,17 +7,15 @@
 The goals / steps of this project are the following:
 
 * Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
-* Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
-* Note: for those first two steps don't forget to normalize your features and randomize a selection for training and testing.
 * Implement a sliding-window technique and use your trained classifier to search for vehicles in images.
-* Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
+* Run ypipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
 [image1]: ./output_images/car_not_car.png
 [image2]: ./output_images/HOG_example.png
 [image8]: ./output_images/non_car_HOG_example.png
-[image3]: ./output_images/sliding_windows.jpg
+[image3]: ./output_images/sliding_window.jpg
 [image4]: ./output_images/sliding_window.jpg
 [image5]: ./output_images/bboxes_and_heat.png
 [image6]: ./output_images/labels_map.png
@@ -82,7 +80,6 @@ For these 10 labels:  [ 1.  0.  1.  1.  1.  1.  0.  0.  1.  0.]
 ```
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
-```
 
 After the selection of the feature parameters, the feature vector are generated and scaled, and used to train the SVM classifier. We have 8792 car images and 8968 non car images, each is 64x64. I then split the data into randomzied training and test sets of 80/20. 
    
