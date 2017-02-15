@@ -55,6 +55,7 @@ Also, use all hog_channel increasse the prediction accuracy.
 
 I settle with the following choice of HOG parameters
 
+```
 colorspace = 'YCrCb' 
 orient = 9
 pix_per_cell = 8
@@ -65,10 +66,12 @@ hist_bins = 16    # Number of histogram bins
 spatial_feat = True # Spatial features on or off
 hist_feat = True # Histogram features on or off
 hog_feat = True # HOG features on or off
+```
 
 Using these parameters, I was able to achieve ~99% accuracy using SVM classifier.
 
-```59.52 Seconds to extract HOG features...
+```
+59.52 Seconds to extract HOG features...
 Using: 9 orientations 8 pixels per cell and 2 cells per block
 Feature vector length: 6108
 15.38 Seconds to train SVC...
@@ -76,6 +79,8 @@ Test Accuracy of SVC =  0.9896
 My SVC predicts:  [ 1.  0.  1.  1.  1.  1.  0.  0.  1.  0.]
 For these 10 labels:  [ 1.  0.  1.  1.  1.  1.  0.  0.  1.  0.]
 0.00094 Seconds to predict 10 labels with SVC
+```
+
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 ```
 
