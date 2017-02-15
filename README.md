@@ -49,7 +49,7 @@ Here is an example using the `YCrCb` color space and HOG parameters of `orientat
 ####2. Explain how you settled on your final choice of HOG parameters.
 
 I tried various combinations of parameters in colorspace, hog_chanel, spatial_size, etc and find out color space RGB has the least linear SVM accuracy.  I tried 'YCrcb' and 'HSV' colorspace and they have better SVM accuracy than RGB.
-Also, use all hog_channel increasse the prediction accuracy.  
+Also, use all hog_channels increasse the prediction accuracy.  
 
 I settle with the following choice of HOG parameters
 
@@ -109,10 +109,11 @@ Here's a [link to my video result](./project_video_output.mp4)
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
-
 I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap.  I then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
 
-Here's an example result showing the heatmap from all 6 test images, the result of `scipy.ndimage.measurements.label()` and the bounding boxes.
+In order to remove the false positive, I integrate a heatmap over 15 frames of video, , such that areas of multiple detections get "hot", while transient false positives stay "cool". I then simply threshold the integrated heatmap to remove false positives.
+
+Here's an example result showing the heatmap from all 6 test images, the result of `scipy.ndimage.measurements.label()` and the bounding boxes on the images.
 
 ### Here are six frames and their corresponding heatmaps:
 
@@ -123,14 +124,13 @@ Here's an example result showing the heatmap from all 6 test images, the result 
 ###Discussion
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+  
 
 1.  To speed things up, instead of extract HOG features from each individual windows as I searched across the image, I extract HOG features just once for the entire region of interest (just the lower half of each frame) and subsample that array for each sliding window.
 
-2. The challenging part of this project for me is to get rid of false positive and in the meantime, identify the right number of vehicle.  I tried the various combination of the buffer size to store the heatmap for a series of frames of video  as well as threshold.  
+2. The challenging part of this project for me is to remove the false positive and in the meantime, identify the right number of vehicle.  I integrate a heatmap over a series of frames. I tried the various combination for the buffer size to store the heatmap for a series of frames of video  as well as the threshold which makes sense.
 
-3. My pipleline wont identity the vehicle as soon as it enters the scene as I integrate a heat map over 15 frames of video.  Also for the fast moving vehicle,  heat wont be get built at the same pixel and would be harder to detect. 
+3. My pipleline won't identity the vehicle as soon as it enters the scene as I integrate a heat map over 15 frames of video.  Also for the fast moving vehicle,  heat wont be get built at the same pixel and would be harder to detect. 
 
 4. Things that I could make it more robust.  If there are overlap detection window or different scale, I can assign the position of the detection to the centroid of the overlapping windows.   THe other thing is to use multi-scale windows, use bigger window size for vehicle closer to camera, use the smaller window size for vehicle near horizon.
  
