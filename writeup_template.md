@@ -31,17 +31,18 @@ The goals / steps of this project are the following:
 
 ###Histogram of Oriented Gradients (HOG)
 
-####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
+####1. Explain how (and identify where in your code) you extracted HOG features from the training images.  
 
-The code for this step is contained in "Section 1: HOG" of `Vehicle_Detection.py`).  
+I started by reading in all the `vehicle` and `non-vehicle` images.  These example images come from a combination of the GTI vehicle image database, the KITTI vision benchmark suite, and examples extracted from the project video itself
+I am using this data to train my SVM classifier for the project
 
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
 ![alt text][image1]
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `YCrCb` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`
 
 
 ![alt text][image2]
@@ -50,7 +51,7 @@ Here is an example using the `YCrCb` color space and HOG parameters of `orientat
 ####2. Explain how you settled on your final choice of HOG parameters.
 
 I tried various combinations of parameters in colorspace, hog_chanel, spatial_size, etc and find out color space RGB has the least linear SVM accuracy.  I tried 'YCrcb' and 'HSV' colorspace and they have better SVM accuracy than RGB.
-Also, use all hog_channel significantly increase the predictiion accuracy.  
+Also, use all hog_channel increasse the prediction accuracy.  
 
 I settle with the following choice of HOG parameters
 
@@ -79,22 +80,13 @@ For these 10 labels:  [ 1.  0.  1.  1.  1.  1.  0.  0.  1.  0.]
 ```
 
 After the selection of the feature parameters, the feature vector are generated and scaled, and used to train the SVM classifier. We have 8792 car images and 8968 non car images, each is 64x64. I then split the data into randomzied training and test sets of 80/20. 
-
-```
-rand_state = np.random.randint(0, 100)
-X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.2, random_state=rand_state)
-```
    
     
 ###Sliding Window Search
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-Since HOG is a computationally expensive operation, I have tried to optimize the sliding window operation.
-
-1) We run the classifier only on the lower half of the image where the road lies
-
-`y_start_stop = [int(image.shape[0]/2), image.shape[0]] `
+Since HOG is a computationally expensive operation, I have tried to optimize the sliding window operation. First, we run the classifier only on the lower half of the image where the road lies.  By doing such, I reduce false positive and reduce the time it takes for the pipeline to process the frame.  Next, I extract sections of region of interest and resize those sections to 64x64 so that the feature vector generated will be the same as those used to train the calssifer.  After sacling the generated feature vectors, they are passed to my SVM classifer to determine if there is a vehilce in this imag segment.  I used a sliding window approach different overlap percentages and window size.  The small window size took a lot of time to process and bigger window size didnot capture far vehicle too well.  So I in the end, I chose a single 96X96 window size and overlap of 50 percent.  I tried this sliding window mechansim on the test images shown below:
 
 ![alt text][image3]
 
