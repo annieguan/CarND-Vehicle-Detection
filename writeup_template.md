@@ -88,25 +88,27 @@ After the selection of the feature parameters, the feature vector are generated 
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-Since HOG is a computationally expensive operation, I have tried to optimize the sliding window operation. First, we run the classifier only on the lower half of the image where the road lies.  By doing such, I reduce false positive and reduce the time it takes for the pipeline to process the frame.  Next, I extract sections of region of interest and resize those sections to 64x64 so that the feature vector generated will be the same as those used to train the calssifer.  After sacling the generated feature vectors, they are passed to my SVM classifer to determine if there is a vehilce in this imag segment.  I used a sliding window approach different overlap percentages and window size.  The small window size took a lot of time to process and bigger window size didnot capture far vehicle too well.  So I in the end, I chose a single 96X96 window size and overlap of 50 percent.  I tried this sliding window mechansim on the test images shown below:
+Since HOG is a computationally expensive operation, I have tried to optimize the sliding window operation. First, we run the classifier only on the lower half of the image where the road lies.  By doing such, I reduce false positive and reduce the time it takes for the pipeline to process the frame.  Next, I extract sections of region of interest and resize those sections to 64x64 so that the feature vector generated will be the same as those used to train the calssifer.  After scaling the generated feature vectors, they are passed to my SVM classifer to determine if there is a vehilce in this imag segment.  I used a sliding window approach different overlap percentages and window size.  The small window size took a lot of time to process and bigger window size didnot capture far vehicle too well.  
 
-![alt text][image3]
+So I in the end, I chose a single 96X96 window size and overlap of 50 percent.  I tried this sliding window mechansim on the test images shown below:
+
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector,  a single 96X96 window size and overlap of 50 percent, which provided a nice result.  Here are some example images:
 
-![alt text][image4]
+![alt text][image3]
 ---
 
 ### Video Implementation
 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./project_video_output.mp4)
 
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
+
 
 I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
 
@@ -132,3 +134,11 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
 
+1.  To speed things up, instead of extract HOG features from each individual windows as I searched across the image, I extract HOG features just once for the entire region of interest (just the lower half of each frame) and subsample that array for each sliding window.
+
+2. The challenging part of this project for me is to get rid of false positive and in the meantime, identify the right number of vehicle.  I tried the various combination of the buffer size to store the heatmap for a series of frames of video  as well as threshold.  
+
+3. My pipleline wont identity the vehicle as soon as it enters the scene as I integrate a heat map over 15 frames of video.  Also for the fast moving vehicle,  heat wont be get built at the same pixel and would be harder to detect. 
+
+4. Things that I could make it more robust.  If there are overlap detection window or different scale, I can assign the position of the detection to the centroid of the overlapping windows.   THe other thing is to use multi-scale windows, use bigger window size for vehicle closer to camera, use the smaller window size for vehicle near horizon.
+ 
